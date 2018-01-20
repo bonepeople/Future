@@ -23,6 +23,7 @@
         <activity
             android:name=".activity.ADActivity"
             android:theme="@style/TranslucentTheme" />
+        <activity android:name=".activity.ListActivity" />
     </application>
 
 </manifest>
