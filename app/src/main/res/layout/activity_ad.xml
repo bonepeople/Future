@@ -13,13 +13,20 @@
         android:background="#33aa99"
         android:contentDescription="@string/contentDescription_ad" />
 
-    <TextView
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
-        android:text="@string/caption_text_quit"
-        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/caption_text_quit"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
 </android.support.constraint.ConstraintLayout>

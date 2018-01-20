@@ -5,6 +5,6 @@
 
     <string name="caption_button_start">开始</string>
     <string name="caption_button_stop">停止</string>
-    <string name="caption_text_quit">滑动解锁 >></string>
+    <string name="caption_text_quit">右滑跳过  >></string>
     <string name="caption_text_anim">文字动画</string>
 </resources>
