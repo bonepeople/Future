@@ -1,11 +1,15 @@
 package com.bonepeople.android.future.future.activity;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.bonepeople.android.future.future.R;
+import com.bonepeople.android.future.future.adapter.ConstructorAdapter;
 import com.bonepeople.android.future.future.base.InternetServices;
 import com.bonepeople.android.future.future.model.ConstructorInfo;
 
@@ -23,7 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class ListActivity extends AppCompatActivity implements Callback<ResponseBody> {
-    private RecyclerView recycler;
+    private ConstructorAdapter adapter;
     private ArrayList<ConstructorInfo> data = new ArrayList<>();
     private int pageIndex = 0, pageCount = 1;
 
@@ -32,7 +36,13 @@ public class ListActivity extends AppCompatActivity implements Callback<Response
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        recycler = findViewById(R.id.recyclerView);
+        RecyclerView recycler = findViewById(R.id.recyclerView);
+
+        adapter = new ConstructorAdapter(data);
+        recycler.setAdapter(adapter);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recycler.setLayoutManager(layoutManager);
+        recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         onRefresh();
     }
@@ -58,10 +68,11 @@ public class ListActivity extends AppCompatActivity implements Callback<Response
     }
 
     @Override
-    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
         try {
             System.out.println("onResponse");
-            JSONObject object = new JSONObject(response.body().string());
+            ResponseBody body = response.body();
+            JSONObject object = new JSONObject(body == null ? "" : body.string());
             System.out.println(object);
 
             pageCount = object.getJSONObject("data").getInt("pageCount");
@@ -72,7 +83,7 @@ public class ListActivity extends AppCompatActivity implements Callback<Response
                 ConstructorInfo info = new ConstructorInfo(array.getJSONObject(index));
                 data.add(info);
             }
-
+            adapter.notifyItemRangeInserted(0, adapter.getItemCount());
         } catch (IOException io) {
             io.printStackTrace();
         } catch (JSONException json) {
@@ -81,7 +92,7 @@ public class ListActivity extends AppCompatActivity implements Callback<Response
     }
 
     @Override
-    public void onFailure(Call<ResponseBody> call, Throwable t) {
+    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
         System.out.println("onFailure");
     }
 }
