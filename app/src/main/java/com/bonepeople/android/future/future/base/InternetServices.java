@@ -1,5 +1,6 @@
 package com.bonepeople.android.future.future.base;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -21,7 +22,7 @@ public interface InternetServices {
 
     @FormUrlEncoded
     @POST("cons/listPage")
-    Call<ResponseBody> getConList(@Field("isApp") boolean isApp
+    Observable<ResponseBody> getConList(@Field("isApp") boolean isApp
             , @Field("appCityId") int appCityId
             , @Field("nativePlaceId") String nativePlaceId
             , @Field("sortType") int sortType

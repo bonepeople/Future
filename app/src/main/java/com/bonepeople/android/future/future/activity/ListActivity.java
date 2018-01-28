@@ -1,6 +1,5 @@
 package com.bonepeople.android.future.future.activity;
 
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -14,19 +13,25 @@ import com.bonepeople.android.future.future.base.InternetServices;
 import com.bonepeople.android.future.future.model.ConstructorInfo;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-public class ListActivity extends AppCompatActivity implements Callback<ResponseBody> {
+public class ListActivity extends AppCompatActivity {
     private ConstructorAdapter adapter;
     private ArrayList<ConstructorInfo> data = new ArrayList<>();
     private int pageIndex = 0, pageCount = 1;
@@ -49,50 +54,83 @@ public class ListActivity extends AppCompatActivity implements Callback<Response
 
     public void onRefresh() {
         pageIndex = 0;
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.shownest.com/").build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.shownest.com/")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
         InternetServices internetServices = retrofit.create(InternetServices.class);
-        Call<ResponseBody> call = internetServices.getConList(true, 100101, "", 1, pageIndex);
-        call.enqueue(this);
+        Observable<ResponseBody> observable = internetServices.getConList(true, 100101, "", 1, pageIndex);
+        onHttpResponse(observable);
     }
 
     public void onLoad() {
         if (pageIndex < pageCount - 1) {
             pageIndex++;
-            Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.shownest.com/").build();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl("https://www.shownest.com/")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
             InternetServices internetServices = retrofit.create(InternetServices.class);
-            Call<ResponseBody> call = internetServices.getConList(true, 100101, "", 1, pageIndex);
-            call.enqueue(this);
+            Observable<ResponseBody> observable = internetServices.getConList(true, 100101, "", 1, pageIndex);
+            onHttpResponse(observable);
         } else {
             Toast.makeText(this, "已经到底了", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-        try {
-            System.out.println("onResponse");
-            ResponseBody body = response.body();
-            JSONObject object = new JSONObject(body == null ? "" : body.string());
-            System.out.println(object);
+    private void onHttpResponse(final Observable<ResponseBody> observable) {
+        observable
+            .subscribeOn(Schedulers.io())
+            .map(new Function<ResponseBody, JSONObject>() {
+                @Override
+                public JSONObject apply(ResponseBody responseBody) throws Exception {
+                    return new JSONObject(responseBody.string());
+                }
+            })
+            .filter(new Predicate<JSONObject>() {
+                @Override
+                public boolean test(JSONObject jsonObject) throws Exception {
+                    if (jsonObject.optInt("state", 0) == 1)
+                        return true;
+                    else
+                        throw new IllegalArgumentException(jsonObject.optString("msg"));
+                }
+            })
+            .flatMap(new Function<JSONObject, ObservableSource<ConstructorInfo>>() {
+                @Override
+                public ObservableSource<ConstructorInfo> apply(JSONObject jsonObject) throws Exception {
+                    pageCount = jsonObject.optJSONObject("data").optInt("pageCount", 1);
+                    final JSONArray array = jsonObject.optJSONObject("data").optJSONArray("constructerBaseList");
+                    if (pageIndex == 0)
+                        data.clear();
+                    return Observable.create(new ObservableOnSubscribe<ConstructorInfo>() {
+                        @Override
+                        public void subscribe(ObservableEmitter<ConstructorInfo> e) throws Exception {
+                            for (int index = 0; index < array.length(); index++) {
+                                JSONObject object = array.optJSONObject(index);
+                                e.onNext(new ConstructorInfo(object));
+                            }
+                            e.onComplete();
+                        }
+                    });
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Observer<ConstructorInfo>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                }
 
-            pageCount = object.getJSONObject("data").getInt("pageCount");
-            JSONArray array = object.getJSONObject("data").getJSONArray("constructerBaseList");
-            if (pageIndex == 0)
-                data.clear();
-            for (int index = 0; index < array.length(); index++) {
-                ConstructorInfo info = new ConstructorInfo(array.getJSONObject(index));
-                data.add(info);
-            }
-            adapter.notifyItemRangeInserted(0, adapter.getItemCount());
-        } catch (IOException io) {
-            io.printStackTrace();
-        } catch (JSONException json) {
-            json.printStackTrace();
-        }
-    }
+                @Override
+                public void onNext(ConstructorInfo value) {
+                    data.add(value);
+                }
 
-    @Override
-    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-        System.out.println("onFailure");
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onComplete() {
+                    adapter.notifyItemRangeInserted(0, adapter.getItemCount());
+                }
+            });
     }
 }
