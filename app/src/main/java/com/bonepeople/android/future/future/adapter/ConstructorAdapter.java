@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.bonepeople.android.future.future.R;
 import com.bonepeople.android.future.future.model.ConstructorInfo;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
@@ -35,6 +37,7 @@ public class ConstructorAdapter extends RecyclerView.Adapter<ConstructorAdapter.
     @Override
     public void onBindViewHolder(ConstructorAdapter.ViewHolder holder, int position) {
         ConstructorInfo constructor = data.get(position);
+        Glide.with(holder.header).load(constructor.getHeaderIcon()).apply(RequestOptions.circleCropTransform()).into(holder.header);
         holder.name.setText(constructor.getConsName());
         if (constructor.isAuthorise())
             holder.auth.setImageResource(R.drawable.icon_authorise_true);
@@ -46,10 +49,10 @@ public class ConstructorAdapter extends RecyclerView.Adapter<ConstructorAdapter.
             holder.warranty.setImageResource(0);
         holder.rating.setRating(getLevel(constructor.getGradePraise()));
         String info = holder.name.getContext().getResources()
-                .getString(R.string.caption_text_constructor
-                        , constructor.getJobNum()
-                        , constructor.getWorkYear()
-                        , constructor.getNativePalceName());
+            .getString(R.string.caption_text_constructor
+                , constructor.getJobNum()
+                , constructor.getWorkYear()
+                , constructor.getNativePalceName());
         holder.info.setText(info);
     }
 

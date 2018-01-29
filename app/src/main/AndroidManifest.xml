@@ -4,6 +4,8 @@
     package="com.bonepeople.android.future.future">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--Glide-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk tools:overrideLibrary="com.facebook.shimmer" />
 
