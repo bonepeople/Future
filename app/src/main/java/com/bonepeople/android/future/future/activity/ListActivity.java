@@ -11,6 +11,7 @@ import com.bonepeople.android.future.future.R;
 import com.bonepeople.android.future.future.adapter.ConstructorAdapter;
 import com.bonepeople.android.future.future.base.InternetServices;
 import com.bonepeople.android.future.future.model.ConstructorInfo;
+import com.bonepeople.android.future.future.widget.recyclerbox.RecyclerBox;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,7 +42,8 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        RecyclerView recycler = findViewById(R.id.recyclerView);
+        RecyclerBox recyclerBox = findViewById(R.id.recyclerBox);
+        RecyclerView recycler = recyclerBox.getRecyclerView();
 
         adapter = new ConstructorAdapter(data);
         recycler.setAdapter(adapter);

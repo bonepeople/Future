@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.bonepeople.android.future.future">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--Glide-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-sdk tools:overrideLibrary="com.facebook.shimmer" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Glide -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
