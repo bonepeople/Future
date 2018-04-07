@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 
 import com.bonepeople.android.future.future.R;
@@ -32,7 +33,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements View.OnClickListener {
     private ConstructorAdapter adapter;
     private ArrayList<ConstructorInfo> data = new ArrayList<>();
     private int pageIndex = 0, pageCount = 1;
@@ -45,7 +46,7 @@ public class ListActivity extends AppCompatActivity {
         RecyclerBox recyclerBox = findViewById(R.id.recyclerBox);
         RecyclerView recycler = recyclerBox.getRecyclerView();
 
-        adapter = new ConstructorAdapter(data);
+        adapter = new ConstructorAdapter(data, this);
         recycler.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
@@ -134,5 +135,11 @@ public class ListActivity extends AppCompatActivity {
                     adapter.notifyItemRangeInserted(0, adapter.getItemCount());
                 }
             });
+    }
+
+    @Override
+    public void onClick(View v) {
+        int position = (int) v.getTag(R.id.clickableTagKey);
+        Toast.makeText(this, data.get(position).getConsName(), Toast.LENGTH_SHORT).show();
     }
 }

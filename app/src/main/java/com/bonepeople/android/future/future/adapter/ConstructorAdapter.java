@@ -23,9 +23,11 @@ import java.util.ArrayList;
 
 public class ConstructorAdapter extends RecyclerView.Adapter<ConstructorAdapter.ViewHolder> {
     private ArrayList<ConstructorInfo> data;
+    private View.OnClickListener listener;
 
-    public ConstructorAdapter(ArrayList<ConstructorInfo> data) {
+    public ConstructorAdapter(ArrayList<ConstructorInfo> data, View.OnClickListener listener) {
         this.data = data;
+        this.listener = listener;
     }
 
     @Override
@@ -37,6 +39,7 @@ public class ConstructorAdapter extends RecyclerView.Adapter<ConstructorAdapter.
     @Override
     public void onBindViewHolder(ConstructorAdapter.ViewHolder holder, int position) {
         ConstructorInfo constructor = data.get(position);
+        holder.background.setTag(R.id.clickableTagKey, position);
         Glide.with(holder.header).load(constructor.getHeaderIcon()).apply(RequestOptions.circleCropTransform()).into(holder.header);
         holder.name.setText(constructor.getConsName());
         if (constructor.isAuthorise())
@@ -78,18 +81,22 @@ public class ConstructorAdapter extends RecyclerView.Adapter<ConstructorAdapter.
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        View background;
         ImageView header, auth, warranty;
         TextView name, info;
         RatingBar rating;
 
         ViewHolder(View view) {
             super(view);
+            background = view;
             header = view.findViewById(R.id.imageView_header);
             name = view.findViewById(R.id.textView_name);
             auth = view.findViewById(R.id.imageView_auth);
             warranty = view.findViewById(R.id.imageView_warranty);
             info = view.findViewById(R.id.textView_info);
             rating = view.findViewById(R.id.ratingBar);
+
+            background.setOnClickListener(listener);
         }
     }
 }

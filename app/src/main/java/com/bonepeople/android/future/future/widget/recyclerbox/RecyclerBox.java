@@ -92,7 +92,7 @@ public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpda
             case MotionEvent.ACTION_DOWN:
                 lastY = event.getY();
                 oldOffset = topOffset;
-                recyclerView.onInterceptTouchEvent(event);
+                recyclerView.dispatchTouchEvent(event);
                 break;
             case MotionEvent.ACTION_MOVE:
                 final float dy = event.getY() - lastY;
@@ -101,7 +101,7 @@ public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpda
                     if (topOffset == 0) {
                         MotionEvent recyclerEvent = MotionEvent.obtain(event);
                         recyclerEvent.offsetLocation(0, oldOffset);
-                        recyclerView.onTouchEvent(recyclerEvent);
+                        recyclerView.dispatchTouchEvent(recyclerEvent);
                         recyclerEvent.recycle();
                     }
                 } else {
@@ -111,13 +111,13 @@ public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpda
                         setTopOffset((int) dy);
                     } else {
                         lastY = event.getY();
-                        recyclerView.onTouchEvent(event);
+                        recyclerView.dispatchTouchEvent(event);
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP: {
-                if (topOffset == 0) {
-                    recyclerView.onTouchEvent(event);
+                if (topOffset == 0 || topOffset == maxHeight) {
+                    recyclerView.dispatchTouchEvent(event);
                     performClick();
                 } else {
                     if (shownTop) {
