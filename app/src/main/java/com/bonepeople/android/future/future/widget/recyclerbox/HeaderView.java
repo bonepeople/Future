@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bonepeople.android.future.future.R;
 
@@ -43,6 +45,50 @@ public class HeaderView extends ViewGroup {
         view = getChildAt(0);
         paint = new Paint();
         paint.setARGB(255, 183, 183, 183);
+
+        TextView app1 = view.findViewById(R.id.textView_app1);
+        TextView app2 = view.findViewById(R.id.textView_app2);
+        TextView app3 = view.findViewById(R.id.textView_app3);
+        TextView app4 = view.findViewById(R.id.textView_app4);
+        TextView app5 = view.findViewById(R.id.textView_app5);
+        TextView app6 = view.findViewById(R.id.textView_app6);
+
+        app1.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#1", Toast.LENGTH_SHORT).show();
+            }
+        });
+        app2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#2", Toast.LENGTH_SHORT).show();
+            }
+        });
+        app3.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#3", Toast.LENGTH_SHORT).show();
+            }
+        });
+        app4.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#4", Toast.LENGTH_SHORT).show();
+            }
+        });
+        app5.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#5", Toast.LENGTH_SHORT).show();
+            }
+        });
+        app6.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "APP#6", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

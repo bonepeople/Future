@@ -15,14 +15,17 @@ import android.view.ViewGroup;
  */
 
 public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpdateListener {
+    private static final int TARGET_NONE = 0;
+    private static final int TARGET_HEADER = 1;
+    private static final int TARGET_LIST = 2;
     private HeaderView headerView;
     private RecyclerView recyclerView;
     private ValueAnimator animator;
-    private int showHeight, maxHeight;
+    private int showHeight, maxHeight, targetView = TARGET_NONE;
     private boolean shownTop = false;
     private boolean needShowTop = false;
     private int oldOffset, topOffset = 0;
-    private float lastY = -1;
+    private float lastX = -1, lastY = -1;
 
     public RecyclerBox(Context context) {
         this(context, null);
@@ -91,21 +94,51 @@ public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpda
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                lastX = event.getX();
                 lastY = event.getY();
                 oldOffset = topOffset;
-//                recyclerView.dispatchTouchEvent(event);
-                recyclerEvent = MotionEvent.obtain(event);
-                recyclerEvent.offsetLocation(0, -oldOffset);
-                recyclerView.dispatchTouchEvent(recyclerEvent);
-                recyclerEvent.recycle();
+                if (topOffset == maxHeight && event.getY() < maxHeight) {
+                    targetView = TARGET_NONE;
+                } else
+                    targetView = TARGET_LIST;
+                if (targetView == TARGET_LIST) {
+                    recyclerEvent = MotionEvent.obtain(event);
+                    recyclerEvent.offsetLocation(0, -oldOffset);
+                    recyclerView.dispatchTouchEvent(recyclerEvent);
+                    recyclerEvent.recycle();
+                } else {
+                    headerView.dispatchTouchEvent(event);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (targetView == TARGET_NONE) {
+                    final float dx = event.getX() - lastX;
+                    final float dy = event.getY() - lastY;
+                    if (Math.abs(dx) > 15) {
+                        targetView = TARGET_HEADER;
+                        break;
+                    }
+                    if (Math.abs(dy) > 15) {
+                        targetView = TARGET_LIST;
+                        recyclerEvent = MotionEvent.obtain(event);
+                        recyclerEvent.setAction(MotionEvent.ACTION_CANCEL);
+                        headerView.dispatchTouchEvent(recyclerEvent);
+                        recyclerEvent.recycle();
+                    }
+                    break;
+                }
+                if (targetView == TARGET_HEADER) {
+                    headerView.dispatchTouchEvent(event);
+                    break;
+                }
                 final float dy = event.getY() - lastY;
                 if (dy < 0) {
                     setTopOffset((int) dy);
                     if (topOffset == 0) {
+                        recyclerView.dispatchTouchEvent(event);
+                    } else {
                         recyclerEvent = MotionEvent.obtain(event);
-                        recyclerEvent.offsetLocation(0, oldOffset);
+                        recyclerEvent.setAction(MotionEvent.ACTION_CANCEL);
                         recyclerView.dispatchTouchEvent(recyclerEvent);
                         recyclerEvent.recycle();
                     }
@@ -125,26 +158,29 @@ public class RecyclerBox extends ViewGroup implements ValueAnimator.AnimatorUpda
                 }
                 break;
             case MotionEvent.ACTION_UP: {
-                if (topOffset == 0 || topOffset == maxHeight) {
-//                    recyclerView.dispatchTouchEvent(event);
-                    recyclerEvent = MotionEvent.obtain(event);
-                    recyclerEvent.offsetLocation(0, -oldOffset);
-                    recyclerView.dispatchTouchEvent(recyclerEvent);
-                    recyclerEvent.recycle();
-                    performClick();
-                } else {
-                    recyclerEvent = MotionEvent.obtain(event);
-                    recyclerEvent.setAction(MotionEvent.ACTION_CANCEL);
-                    recyclerView.dispatchTouchEvent(recyclerEvent);
-                    recyclerEvent.recycle();
-                    if (shownTop) {
-                        needShowTop = topOffset >= maxHeight;
+                if (targetView == TARGET_LIST) {
+                    if (topOffset == 0 || topOffset == maxHeight) {
+                        recyclerEvent = MotionEvent.obtain(event);
+                        recyclerEvent.offsetLocation(0, -oldOffset);
+                        recyclerView.dispatchTouchEvent(recyclerEvent);
+                        recyclerEvent.recycle();
+                        performClick();
                     } else {
-                        needShowTop = topOffset >= showHeight;
+                        recyclerEvent = MotionEvent.obtain(event);
+                        recyclerEvent.setAction(MotionEvent.ACTION_CANCEL);
+                        recyclerView.dispatchTouchEvent(recyclerEvent);
+                        recyclerEvent.recycle();
+                        if (shownTop) {
+                            needShowTop = topOffset >= maxHeight;
+                        } else {
+                            needShowTop = topOffset >= showHeight;
+                        }
+                        startAnimation();
                     }
-                    startAnimation();
+                    //计算速度，滑动速度比较大的情况计算出下一个抬起的点位 赋值给抬起事件再传递给RecyclerView，这样可以使滑动更加顺滑，避免实际移动距离过短导致列表静止不动的情况
+                } else {
+                    headerView.dispatchTouchEvent(event);
                 }
-                //计算速度，滑动速度比较大的情况计算出下一个抬起的点位 赋值给抬起事件再传递给RecyclerView，这样可以使滑动更加顺滑，避免实际移动距离过短导致列表静止不动的情况
             }
             break;
         }
