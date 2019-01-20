@@ -4,6 +4,7 @@
     <string name="contentDescription_ad">adPicture</string>
 
     <string name="caption_button_list">工长列表</string>
+    <string name="caption_button_ripple">水波纹特效</string>
     <string name="caption_button_start">开始</string>
     <string name="caption_button_stop">停止</string>
     <string name="caption_text_quit">右滑跳过  >></string>

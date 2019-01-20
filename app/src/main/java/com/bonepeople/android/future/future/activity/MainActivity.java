@@ -13,19 +13,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(getApplicationContext(), ADActivity.class));
+        getApplication().startActivity(new Intent(this, ADActivity.class));
 
         setContentView(R.layout.activity_main);
 
         Button _button_list = findViewById(R.id.button_list);
         _button_list.setOnClickListener(this);
+        findViewById(R.id.button_ripple).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_list:
-                startActivity(new Intent(getApplicationContext(), ListActivity.class));
+                startActivity(new Intent(this, ListActivity.class));
+                break;
+            case R.id.button_ripple:
+                startActivity(new Intent(this, RippleActivity.class));
                 break;
         }
     }
