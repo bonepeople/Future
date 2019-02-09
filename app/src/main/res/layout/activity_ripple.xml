@@ -87,4 +87,56 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="以上使用的都是系统默认的水波纹效果，该效果的颜色由主题中colorControlHighlight字段控制" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_color_only"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="自定义水波纹：只定义颜色，遮罩层的颜色会根据所定颜色确定，水波纹的样式和无边界波纹一致，可以通过设置radius属性控制半径，即使将颜色设定为不透明，使用foreground依旧会呈现出半透明的效果" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_color_mask"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="自定义水波纹：定义水波纹及遮罩层的颜色，包含item就会使用有边界的水波纹样式，此时radius属性控制的是遮罩层的半径，水波纹依旧会在控件内部所有区域扩散，item中必须包含drawable属性，如果drawable对应的是透明颜色水波纹效果也会透明，对item添加@android:id/mask属性会使drawable属性无效" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_color_img"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="自定义水波纹：定义水波纹颜色及遮罩层的图片，mask层用来约束水波纹的范围，如果使用的是png图片，水波纹会填充至图片中" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_color_shape"
+        android:clickable="true"
+        android:padding="5dp"
+        android:text="自定义水波纹：定义水波纹颜色及遮罩层的形状，形状的填充颜色不能为纯透明，只有非透明位置才会被显示，遮罩层的尺寸会填满控件，如果要控制遮罩层的大小需要在item上控制" />
 </LinearLayout>
