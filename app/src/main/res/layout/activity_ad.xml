@@ -20,7 +20,8 @@
         android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:shimmer_duration="2000">
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,4 +30,14 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp" />
     </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <TextView
+        android:id="@+id/textView_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:textColor="#60FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/shimmer"
+        app:layout_constraintTop_toTopOf="@id/shimmer" />
 </android.support.constraint.ConstraintLayout>

@@ -10,4 +10,5 @@
     <string name="caption_text_quit">右滑跳过  >></string>
     <string name="caption_text_anim">文字动画</string>
     <string name="caption_text_constructor">工地:%1$d个  经验:%2$d年  籍贯:%3$s</string>
+    <string name="caption_text_timer">(%ds)</string>
 </resources>
